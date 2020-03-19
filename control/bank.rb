@@ -25,6 +25,6 @@ class Bank
   end
 
   def show_state
-    "Сумма игрока #{@player_money}"
+    puts "Сумма игрока #{@player_money}"
   end
 end
