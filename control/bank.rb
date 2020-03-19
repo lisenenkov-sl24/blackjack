@@ -17,7 +17,7 @@ class Bank
     when :player
       @player_money += @stake
       @dealer_money -= @stake
-    when :dealer 
+    when :dealer
       @player_money -= @stake
       @dealer_money += @stake
     end
