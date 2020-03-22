@@ -19,8 +19,7 @@ class Play
       return false
     end
     yield dealer_turn
-    return false if check_3_all
-    true
+    !check_3_all
   end
 
   def cards(show_dealer)
