@@ -1,18 +1,7 @@
-require_relative 'control/bank'
-require_relative 'control/play'
+require_relative 'interop'
 
-puts 'Ваше имя'
-name = gets.chomp
-
-bank = Bank.new(100, 100)
-bank.show_state
-
+interop = Interop.init_game
 loop do
-  play = Play.new(name)
-  bank.make_stake 10
-  bank.procede play.turn
-  bank.show_state
-
-  puts 'Продожить (д/Н)'
-  break if gets.chomp.upcase != 'Д'
+  interop.play_game
+  break unless interop.should_continue?
 end

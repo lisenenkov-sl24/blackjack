@@ -1,5 +1,8 @@
-class Bank
-  def initialize(player_money, dealer_money)
+class Player
+  attr_reader :name
+
+  def initialize(name, player_money, dealer_money)
+    @name = name
     @player_money = player_money
     @dealer_money = dealer_money
     @stake = 0
@@ -24,7 +27,7 @@ class Bank
     @stake = 0
   end
 
-  def show_state
-    puts "Сумма игрока #{@player_money}"
+  def state
+    "Сумма игрока #{@player_money}"
   end
 end

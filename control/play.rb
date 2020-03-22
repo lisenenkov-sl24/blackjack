@@ -1,78 +1,68 @@
-require_relative '..\model\cardset'
-require_relative '..\model\carddeck'
+require_relative '..\model\hand'
+require_relative '..\model\deck'
 
 class Play
-  def initialize(playername)
-    @deck = CardDeck.new
-    @dealerset = CardSet.new(@deck)
-    @playerset = CardSet.new(@deck)
-    @playername = playername
+  def initialize(player)
+    @deck = Deck.new
+    @dealerset = Hand.new(@deck)
+    @playerset = Hand.new(@deck)
+    @player = player
+    player.make_stake(10)
   end
 
-  def turn
-    loop do
-      show_cards
-      case ask_player
-      when :add_card
-        @playerset.draw if @playerset.cards.size < 3
-        return open_cards if check_3_all
-      when :open_cards
-        return open_cards
-      end
-      ask_dealer
-      return open_cards if check_3_all
+  def turn(player_answer)
+    case player_answer
+    when :add_card
+      @playerset.draw if @playerset.cards.size < 3
+      return false if check_3_all
+    when :open_cards
+      return false
     end
+    yield dealer_turn
+    return false if check_3_all
+    true
   end
 
-  private
-
-  def show_cards
-    puts "Дилер: #{'*' * @dealerset.cards.size} #{@playername}: #{@playerset}"
+  def cards(show_dealer)
+    dealerset = show_dealer ? @dealerset : ('*' * @dealerset.cards.size)
+    "Дилер: #{dealerset} #{@player.name}: #{@playerset}"
   end
 
   def open_cards
-    puts "Дилер: #{@dealerset} #{@playername}: #{@playerset}"
-
     playerpoints = @playerset.calculate_points
     if playerpoints > 21
-      puts "У #{@playername} перебор: #{playerpoints}"
-      return :dealer
+      @player.procede :dealer
+      return "У #{@player.name} перебор: #{playerpoints}"
     end
 
     dealerpoints = @dealerset.calculate_points
     if dealerpoints > 21
-      puts "У дилера перебор: #{dealerpoints}"
-      :player
+      @player.procede :player
+      "У дилера перебор: #{dealerpoints}"
     elsif playerpoints == dealerpoints
-      puts 'Ничья'
-      nil
+      @player.procede nil
+      'Ничья'
     elsif playerpoints > dealerpoints
-      puts "Выиграл #{@playername}"
-      :player
+      @player.procede :player
+      "Выиграл #{@player.name}"
     else
-      puts 'Выиграл дилер'
-      :dealer
+      @player.procede :dealer
+      'Выиграл дилер'
     end
   end
 
-  def ask_player
-    puts '0 Пропустить'
-    puts '1 Добавить карту' if @playerset.cards.size < 3
-    puts '2 Открыть карты'
-    loop do
-      input = gets.chomp.to_i
-      return :skip_turn if input == 0
-      return :add_card if input == 1 && @playerset.cards.size < 3
-      return :open_cards if input == 2
-    end
+  def player_can_add_card?
+    @playerset.cards.size < 3
   end
 
-  def ask_dealer
+  private
+
+  def dealer_turn
     if @dealerset.calculate_points >= 17
-      puts 'Дилер пропускает ход'
+      'Дилер пропускает ход'
     else
-      puts 'Дилер берет карту'
       @dealerset.draw
+      'Дилер берет карту'
     end
   end
 

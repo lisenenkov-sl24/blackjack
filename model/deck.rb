@@ -1,6 +1,6 @@
 require_relative 'card'
 
-class CardDeck
+class Deck
   def initialize
     @deck = Card::RANKS.flat_map do |rank, _|
       Card::SUITS.map { |suit| Card.new(rank, suit) }

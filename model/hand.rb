@@ -1,6 +1,6 @@
-require_relative 'carddeck'
+require_relative 'deck'
 
-class CardSet
+class Hand
   attr_reader :cards
 
   def initialize(deck)
